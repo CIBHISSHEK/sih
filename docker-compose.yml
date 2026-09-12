@@ -1,0 +1,53 @@
+# One-command deploy: `docker compose up -d --build`
+# Serves the whole app (frontend + API + realtime) on http://<host>:4000
+# and the ML prediction service on :8000 (internal only).
+#
+# Before deploying: copy .env.example -> .env and set at minimum JWT_SECRET.
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Blank => the SPA calls the API on its own origin. Set to a full
+        # URL only if you host the frontend somewhere separate.
+        VITE_API_URL: ""
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-4000}:4000"
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: "file:/data/app.db"
+      JWT_SECRET: "${JWT_SECRET:?set JWT_SECRET in .env}"
+      ML_SERVICE_URL: "http://ml:8000"
+      WEATHER_MODE: "${WEATHER_MODE:-live}"
+      VOICE_PROVIDER: "${VOICE_PROVIDER:-mock}"
+      SARVAM_API_KEY: "${SARVAM_API_KEY:-}"
+      CRON_INTERVAL_MIN: "${CRON_INTERVAL_MIN:-2}"
+      # DEMO_MODE must stay false in a real deployment — true exposes the
+      # database-wipe / fake-booking endpoints.
+      DEMO_MODE: "${DEMO_MODE:-false}"
+      # Set true ONCE against a brand-new empty database to load reference /
+      # pilot data, then remove it.
+      SEED_ON_START: "${SEED_ON_START:-false}"
+      FIREBASE_SERVICE_ACCOUNT_PATH: "${FIREBASE_SERVICE_ACCOUNT_PATH:-}"
+    volumes:
+      - db-data:/data
+    depends_on:
+      - ml
+
+  ml:
+    build:
+      context: ./apps/ml
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      ML_PORT: 8000
+    # No published port — only the app container needs to reach it.
+    expose:
+      - "8000"
+
+volumes:
+  db-data:

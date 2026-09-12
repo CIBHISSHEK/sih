@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Farmer {
+  id                String   @id @default(cuid())
+  name              String
+  phone             String   @unique
+  farmerIdMasked    String
+  landSizeAcres     Float
+  primaryCrop       String
+  lat               Float
+  lng               Float
+  village           String
+  district          String
+  state             String   @default("Tamil Nadu")
+  preferredLanguage String   @default("en") // hi | ta | te | kn | en
+  createdAt         DateTime @default(now())
+
+  bookings          Booking[]
+  notifications     NotificationLog[]
+}
+
+model Centre {
+  id                   String   @id @default(cuid())
+  name                 String
+  code                 String   @unique
+  address              String
+  district             String
+  lat                  Float
+  lng                  Float
+  cropsAccepted        String // JSON string array
+  dailyCapacityQtl     Float
+  remainingCapacityQtl Float
+  queueLength          Int      @default(0)
+  avgProcessingTimeMin Float    @default(12)
+  openTime             String   @default("08:00")
+  closeTime            String   @default("17:00")
+  isNearCapacity       Boolean  @default(false)
+
+  slots    Slot[]
+  bookings Booking[]
+}
+
+model Slot {
+  id          String @id @default(cuid())
+  centreId    String
+  date        String // YYYY-MM-DD
+  startTime   String // HH:mm
+  endTime     String // HH:mm
+  capacityQtl Float
+  bookedQtl   Float  @default(0)
+
+  centre   Centre    @relation(fields: [centreId], references: [id])
+  bookings Booking[]
+
+  @@unique([centreId, date, startTime])
+}
+
+model Booking {
+  id            String  @id @default(cuid())
+  farmerId      String
+  centreId      String
+  slotId        String
+  crop          String
+  quantityQtl   Float
+  status        String  @default("BOOKED") // BookingStatus
+  tokenNumber   String  @unique
+  arrivalOtp    String
+
+  riskLevel     String?
+  riskScore     Float?
+  riskFactors   String? // JSON RiskFactor[]
+
+  predictedWaitMin          Float?
+  recommendationScore       Float?
+  recommendationBreakdown   String? // JSON RecommendationBreakdownItem[]
+
+  bookedVia            String  @default("APP") // BookedVia
+  notifiedApproaching  Boolean @default(false)
+
+  arrivedAt            DateTime?
+  processingStartedAt  DateTime?
+  completedAt          DateTime?
+  actualProcessingMin  Float?
+  finalQuantityQtl     Float?
+  rejectedQtl          Float?
+
+  paymentStatus String  @default("PENDING") // PaymentStatus
+  paymentAmount Float?
+  paidAt        DateTime?
+
+  createdAt DateTime @default(now())
+
+  farmer Farmer @relation(fields: [farmerId], references: [id])
+  centre Centre @relation(fields: [centreId], references: [id])
+  slot   Slot   @relation(fields: [slotId], references: [id])
+
+  notifications NotificationLog[]
+
+  @@index([centreId, status])
+  @@index([farmerId])
+}
+
+model NotificationLog {
+  id        String   @id @default(cuid())
+  bookingId String?
+  farmerId  String
+  type      String
+  channel   String // PUSH | SMS | VOICE
+  message   String
+  createdAt DateTime @default(now())
+
+  booking Booking? @relation(fields: [bookingId], references: [id])
+  farmer  Farmer   @relation(fields: [farmerId], references: [id])
+}
+
+model EventLog {
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String
+  eventType  String
+  payload    String? // JSON
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+}

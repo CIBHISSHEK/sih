@@ -1,0 +1,14 @@
+{
+  "LANGUAGE": "Welcome. Say or type: Hindi, Tamil, Telugu, or English.",
+  "CROP": "What crop are you selling? For example paddy, wheat, or maize.",
+  "QUANTITY": "How many quintals do you want to sell? Please say a number.",
+  "DAYS_SINCE_HARVEST": "How many days ago did you harvest? Please say a number.",
+  "STORAGE": "Is your produce stored in the open, or under a covered roof? Say 'open' or 'covered'.",
+  "DATE": "Which day do you want to book? Say 'today', 'tomorrow', or a date like 2026-09-10.",
+  "CONFIRM_RECOMMENDATION": "We recommend {centreName}, about {distanceKm} kilometres away, with a predicted wait of {predictedWaitMin} minutes. Your quality risk is {riskLevel}. Say 'yes' to book, or 'no' to cancel.",
+  "NO_OPTIONS": "Sorry, no centres are available nearby for that date and quantity. Please try the app, or a different date.",
+  "RETRY": "Sorry, I didn't understand that. {prompt}",
+  "HANDOFF": "I'm having trouble understanding. Please continue on the app instead.",
+  "DONE_BOOKED": "Booked! Your token is {tokenNumber}. Your arrival OTP is {arrivalOtp}. Thank you.",
+  "DONE_CANCELLED": "Okay, cancelled. You can start again anytime."
+}

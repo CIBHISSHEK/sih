@@ -1,0 +1,15 @@
+**/node_modules
+**/dist
+**/.venv
+**/__pycache__
+apps/web/dist
+apps/api/dist
+prisma/dev.db
+prisma/dev.db-journal
+*.log
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+DEMO_SCRIPT.md
