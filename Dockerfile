@@ -28,7 +28,7 @@ RUN npm run prisma:generate \
  && npm run build -w apps/web
 
 # Prune to production dependencies for the runtime image
-RUN npm prune --omit=dev --workspaces --include-workspace-root
+#RUN npm prune --omit=dev --workspaces --include-workspace-root
 
 # ── Runtime stage ──────────────────────────────────────────────────────────
 FROM node:20-bookworm-slim AS runtime
@@ -42,6 +42,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends openssl \
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/prisma ./prisma
+COPY --from=build /app/prisma ./prisma
+RUN npx prisma generate --schema=./prisma/schema.prisma
 COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=build /app/packages/shared/dist ./packages/shared/dist
 COPY --from=build /app/packages/shared/package.json ./packages/shared/package.json
