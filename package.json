@@ -19,8 +19,10 @@
     "prisma:migrate": "prisma migrate dev --schema=prisma/schema.prisma --name init",
     "postinstall": "(npx --yes prisma generate --schema=prisma/schema.prisma || true) && (npm run ml:setup || true)"
   },
-  "devDependencies": {
-    "concurrently": "^9.1.0",
+  "dependencies": {
     "prisma": "^5.20.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
   }
 }
