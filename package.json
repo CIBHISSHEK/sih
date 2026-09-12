@@ -15,9 +15,9 @@
     "ml:setup": "node scripts/ml-setup.js",
     "build": "npm run build -w packages/shared && npm run build -w apps/api && npm run build -w apps/web",
     "seed": "npm run build -w packages/shared && npm run seed -w apps/api",
-    "prisma:generate": "prisma generate --schema=prisma/schema.prisma",
+    "prisma:generate": "npx --yes prisma generate --schema=prisma/schema.prisma",
     "prisma:migrate": "prisma migrate dev --schema=prisma/schema.prisma --name init",
-    "postinstall": "npm run prisma:generate && npm run ml:setup"
+    "postinstall": "(npx --yes prisma generate --schema=prisma/schema.prisma || true) && (npm run ml:setup || true)"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",
